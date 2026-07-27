@@ -32,6 +32,7 @@ export interface SnackbarOptions {
   title?: string;
   description?: string;
   duration?: number;
+  pauseOnHover?: boolean;
   position?: SnackbarPosition;
   variant?: SnackbarVariant;
   animation?: SnackbarAnimation;
@@ -47,6 +48,7 @@ export interface SnackbarOptions {
 export interface SnackbarManagerConfig {
   maxVisible?: number;
   duration?: number;
+  pauseOnHover?: boolean;
   position?: SnackbarPosition;
   animation?: SnackbarAnimation;
   direction?: SnackbarDirection;
@@ -63,6 +65,13 @@ type ResolvedSnackbarManagerConfig = Omit<Required<SnackbarManagerConfig>, "widt
 
 type ContainerMap = Map<SnackbarPosition, HTMLElement>;
 
+type AutoDismissState = {
+  timeoutId?: ReturnType<typeof setTimeout>;
+  deadline: number;
+  paused: boolean;
+  remainingMs: number;
+};
+
 const POSITIONS: SnackbarPosition[] = [
   "top-left",
   "top-center",
@@ -75,6 +84,7 @@ const POSITIONS: SnackbarPosition[] = [
 const defaults: ResolvedSnackbarManagerConfig = {
   maxVisible: 4,
   duration: 4500,
+  pauseOnHover: true,
   position: "bottom-right",
   animation: "slide",
   direction: "auto",
@@ -108,7 +118,7 @@ export class SnackbarManager {
   private config: ResolvedSnackbarManagerConfig;
   private host: HTMLElement | null = null;
   private containers: ContainerMap = new Map();
-  private timeouts = new Map<string, ReturnType<typeof setTimeout>>();
+  private autoDismiss = new Map<string, AutoDismissState>();
 
   constructor(config: SnackbarManagerConfig = {}) {
     this.config = { ...defaults, ...readGlobalConfig(), ...config };
@@ -157,8 +167,7 @@ export class SnackbarManager {
 
     const duration = options.duration ?? this.config.duration;
     if (duration > 0) {
-      const timeout = globalThis.setTimeout(() => this.dismiss(id), duration);
-      this.timeouts.set(id, timeout);
+      this.scheduleAutoDismiss(id, duration);
     }
     return id;
   }
@@ -172,11 +181,7 @@ export class SnackbarManager {
       return;
     }
 
-    const timeout = this.timeouts.get(id);
-    if (timeout) {
-      globalThis.clearTimeout(timeout);
-      this.timeouts.delete(id);
-    }
+    this.clearAutoDismiss(id);
 
     const remove = () => {
       const onClose = (toast as HTMLElement & { __onClose?: (targetId: string) => void }).__onClose;
@@ -465,7 +470,59 @@ export class SnackbarManager {
       this.attachSwipeDismiss(toast, id);
     }
 
+    const pauseOnHover = options.pauseOnHover ?? this.config.pauseOnHover;
+    if (pauseOnHover) {
+      toast.addEventListener("mouseenter", () => this.pauseAutoDismiss(id));
+      toast.addEventListener("mouseleave", () => this.resumeAutoDismiss(id));
+    }
+
     return toast;
+  }
+
+  private scheduleAutoDismiss(id: string, ms: number) {
+    this.clearAutoDismiss(id);
+    const deadline = Date.now() + ms;
+    const timeoutId = globalThis.setTimeout(() => this.dismiss(id), ms);
+    this.autoDismiss.set(id, { timeoutId, deadline, paused: false, remainingMs: ms });
+  }
+
+  private pauseAutoDismiss(id: string) {
+    const state = this.autoDismiss.get(id);
+    if (!state || state.paused) {
+      return;
+    }
+
+    if (state.timeoutId) {
+      globalThis.clearTimeout(state.timeoutId);
+      state.timeoutId = undefined;
+    }
+
+    state.remainingMs = Math.max(0, state.deadline - Date.now());
+    state.paused = true;
+  }
+
+  private resumeAutoDismiss(id: string) {
+    const state = this.autoDismiss.get(id);
+    if (!state || !state.paused) {
+      return;
+    }
+
+    state.paused = false;
+    if (state.remainingMs <= 0) {
+      this.dismiss(id);
+      return;
+    }
+
+    state.deadline = Date.now() + state.remainingMs;
+    state.timeoutId = globalThis.setTimeout(() => this.dismiss(id), state.remainingMs);
+  }
+
+  private clearAutoDismiss(id: string) {
+    const state = this.autoDismiss.get(id);
+    if (state?.timeoutId) {
+      globalThis.clearTimeout(state.timeoutId);
+    }
+    this.autoDismiss.delete(id);
   }
 
   private resolveDirection(input: SnackbarDirection): "ltr" | "rtl" {

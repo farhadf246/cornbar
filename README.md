@@ -212,6 +212,7 @@ cornbar.configure({
 | `title` | `string` | `undefined` | Toast title text |
 | `description` | `string` | `undefined` | Toast body text |
 | `duration` | `number` | `4500` | Auto close time in ms (`0` disables auto close) |
+| `pauseOnHover` | `boolean` | `true` | Pause auto close while the pointer is over the toast |
 | `position` | `"top-left" \| "top-center" \| "top-right" \| "bottom-left" \| "bottom-center" \| "bottom-right"` | `"bottom-right"` | Toast stack position |
 | `variant` | `"success" \| "error" \| "info" \| "warning"` | `"info"` | Visual status style |
 | `theme` | `"light" \| "dark" \| "auto"` | `"auto"` | Color theme (`auto` reads system) |
@@ -239,6 +240,7 @@ cornbar.configure({
 |---|---|---|---|
 | `maxVisible` | `number` | `4` | Maximum visible toasts per position |
 | `duration` | `number` | `4500` | Global auto close duration |
+| `pauseOnHover` | `boolean` | `true` | Pause auto close while the pointer is over a toast |
 | `position` | `SnackbarPosition` | `"bottom-right"` | Global default position |
 | `animation` | `SnackbarAnimation` | `"slide"` | Global default animation |
 | `direction` | `SnackbarDirection` | `"auto"` | Global default direction |

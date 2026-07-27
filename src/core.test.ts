@@ -263,6 +263,43 @@ describe("SnackbarManager", () => {
     expect(stack?.dataset.position).toBe("bottom-center");
   });
 
+  it("pauses auto dismiss while mouse is over toast", () => {
+    vi.useFakeTimers();
+    try {
+      const manager = new SnackbarManager({ duration: 3000 });
+      manager.show({ description: "Hover me" });
+
+      const toast = document.querySelector<HTMLElement>(".cornbar-toast");
+      expect(toast).not.toBeNull();
+
+      vi.advanceTimersByTime(2500);
+      toast?.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      vi.advanceTimersByTime(5000);
+      expect(document.querySelector(".cornbar-toast")).not.toBeNull();
+
+      toast?.dispatchEvent(new MouseEvent("mouseleave", { bubbles: true }));
+      vi.advanceTimersByTime(720);
+      expect(document.querySelector(".cornbar-toast")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("keeps auto dismiss running on hover when pauseOnHover is false", () => {
+    vi.useFakeTimers();
+    try {
+      const manager = new SnackbarManager({ duration: 1000, pauseOnHover: false });
+      manager.show({ description: "No pause" });
+
+      const toast = document.querySelector<HTMLElement>(".cornbar-toast");
+      toast?.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+      vi.advanceTimersByTime(1220);
+      expect(document.querySelector(".cornbar-toast")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("injects cornbar styles into document head on show", async () => {
     const manager = new SnackbarManager({ duration: 0 });
     manager.show({ description: "Styled" });
