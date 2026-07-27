@@ -21,6 +21,8 @@ It works in vanilla projects and ships a React-friendly entry as well.
 
 ```bash
 npm i cornbar
+yarn add cornbar
+pnpm add cornbar
 ```
 
 ## Quick Start (Vanilla)
