@@ -17,6 +17,7 @@ type Controls = {
   animation: "slide" | "fade" | "scale";
   direction: "auto" | "ltr" | "rtl";
   duration: number;
+  pauseOnHover: boolean;
   actionLabel: string;
   showAction: boolean;
   dismissOnAction: boolean;
@@ -42,6 +43,7 @@ const meta: Meta<Controls> = {
     animation: "slide",
     direction: "auto",
     duration: 4500,
+    pauseOnHover: true,
     actionLabel: "Undo",
     showAction: true,
     dismissOnAction: true,
@@ -100,6 +102,7 @@ export const Playground: Story = {
       closeOnSwipe: args.closeOnSwipe,
       maxVisible: args.maxVisible,
       duration: args.duration,
+      pauseOnHover: args.pauseOnHover,
       position: args.position,
       animation: args.animation,
       direction: args.direction,
@@ -129,6 +132,7 @@ export const Playground: Story = {
           <span style="font-size:12px;color:#0f172a;background:#e2e8f0;border-radius:999px;padding:4px 10px;">offsetX: ${args.offsetX}</span>
           <span style="font-size:12px;color:#0f172a;background:#e2e8f0;border-radius:999px;padding:4px 10px;">offsetY: ${args.offsetY}</span>
           <span style="font-size:12px;color:#0f172a;background:#e2e8f0;border-radius:999px;padding:4px 10px;">mobileBackdrop: ${args.mobileBackdrop ? "on" : "off"}</span>
+          <span style="font-size:12px;color:#0f172a;background:#e2e8f0;border-radius:999px;padding:4px 10px;">pauseOnHover: ${args.pauseOnHover ? "on" : "off"}</span>
         </div>
         <button data-id="show-toast" style="margin-top:14px;border:0;background:#4f46e5;color:#fff;border-radius:12px;padding:10px 14px;font-weight:600;cursor:pointer;transition:all .2s ease;">Show Toast</button>
       </section>
@@ -145,6 +149,7 @@ export const Playground: Story = {
         animation: args.animation,
         direction: args.direction,
         duration: args.duration,
+        pauseOnHover: args.pauseOnHover,
         actions: args.showAction
           ? [
               {
