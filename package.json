@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Framework-agnostic snackbar with gestures, actions, and flexible theming.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farhadf246/cornbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/farhadf246/cornbar/issues"
+  },
+  "homepage": "https://farhadf246.github.io/cornbar/",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

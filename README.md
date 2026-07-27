@@ -343,6 +343,54 @@ cornbar.show({
 }
 ```
 
+## Releasing
+
+Releases are automated when you push a version tag. The workflow runs tests, builds, publishes to npm, and creates a GitHub Release with auto-generated notes from commits/PRs since the previous tag.
+
+### One-time setup (recommended: Trusted Publishing)
+
+npm no longer offers classic **Automation** tokens. Prefer **Trusted Publishing** so GitHub Actions can publish without a long-lived token:
+
+1. Publish the package once manually (if it is not on npm yet): `npm login && npm publish --access public`
+2. On [npmjs.com](https://www.npmjs.com) open the `cornbar` package → **Settings** → **Trusted Publisher**
+3. Add GitHub Actions:
+   - **Organization / user:** your GitHub username or org
+   - **Repository:** `cornbar` (or the exact repo name)
+   - **Workflow filename:** `release.yml`
+   - **Environment name:** leave empty
+   - **Allowed actions:** `allow npm publish`
+4. Save. Later tag pushes will publish via OIDC (`id-token: write` is already in the workflow). Requires Node 22+ in CI.
+
+### Fallback: Granular Access Token
+
+If Trusted Publishing is not available yet, use **New Granular Access Token**:
+
+1. npm → **Access Tokens** → **Generate New Token** → **Granular Access Token**
+2. Set:
+   - **Permissions:** Read and write
+   - **Packages:** select `cornbar` (or All packages for first publish)
+   - **Bypass 2FA / Bypass two-factor authentication:** enabled (required for CI)
+   - **Expiration:** as long as npm allows (you will need to rotate it)
+3. GitHub repo → **Settings → Secrets and variables → Actions** → secret name `NPM_TOKEN`
+
+### Publish a new version
+
+```bash
+# bump version in package.json, create commit + tag (e.g. 0.2.0 → v0.2.0)
+npm version patch   # or minor / major
+
+# push commit and tag
+git push origin main --follow-tags
+```
+
+The tag must match `package.json` (`v0.2.0` ↔ `"version": "0.2.0"`). GitHub Actions will:
+
+- run `npm test` and `npm run build`
+- publish `cornbar@<version>` to npm
+- create a GitHub Release with generated release notes
+
+For pre-releases, use e.g. `npm version prerelease --preid=beta` → tag `v0.2.0-beta.0`.
+
 ## Storybook
 
 ```bash
