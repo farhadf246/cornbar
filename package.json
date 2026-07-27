@@ -40,7 +40,7 @@
     "prebuild": "node scripts/embed-css.mjs",
     "pretest": "node scripts/embed-css.mjs",
     "precheck": "node scripts/embed-css.mjs",
-    "build": "tsup",
+    "build": "tsup && node scripts/stamp-use-client.mjs",
     "dev": "node scripts/embed-css.mjs && storybook dev -p 6006",
     "build-storybook": "node scripts/embed-css.mjs && storybook build",
     "check": "tsc --noEmit",

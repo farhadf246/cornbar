@@ -37,8 +37,8 @@ pnpm add cornbar
 
 | Import | Use for |
 |---|---|
-| `cornbar` | Core API plus React helpers (`cornbar`, `CornbarProvider`, types) |
-| `cornbar/react` | Same React helpers; optional dedicated entry for client-only bundles |
+| `cornbar` | Full API including `CornbarProvider` (client-side in Next.js) |
+| `cornbar/react` | Same React helpers; optional dedicated entry |
 | `cornbar/styles.css` | Optional external stylesheet instead of auto-injected styles |
 
 ## Quick Start (Vanilla)
@@ -97,45 +97,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             animation: "slide"
           }}
         />
-        {children}
-      </body>
-    </html>
-  );
-}
-```
-
-> Note: in App Router, put this usage inside a Client Component file (or mark the provider usage with `"use client"`), because `CornbarProvider` runs on the client.
-
-**`app/providers.tsx` (recommended for App Router):**
-
-```tsx
-"use client";
-
-import { CornbarProvider } from "cornbar";
-
-export function Providers() {
-  return (
-    <CornbarProvider
-      config={{
-        direction: "rtl",
-        position: "bottom-center",
-        theme: "auto",
-        animation: "slide"
-      }}
-    />
-  );
-}
-```
-
-```tsx
-// app/layout.tsx
-import { Providers } from "./providers";
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="fa" dir="rtl">
-      <body>
-        <Providers />
         {children}
       </body>
     </html>
