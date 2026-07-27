@@ -396,7 +396,7 @@ The tag must match `package.json` (`v0.2.0` ↔ `"version": "0.2.0"`). GitHub Ac
 
 - run `npm test` and `npm run build`
 - publish `cornbar@<version>` to npm
-- create a GitHub Release with generated release notes
+- create a GitHub Release whose notes list commits since the previous tag
 
 For pre-releases, use e.g. `npm version prerelease --preid=beta` → tag `v0.2.0-beta.0`.
 

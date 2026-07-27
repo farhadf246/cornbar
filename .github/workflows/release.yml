@@ -52,7 +52,28 @@ jobs:
         run: npm publish --access public
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          PREVIOUS_TAG="$(git tag --sort=-version:refname | grep -vxF "$TAG" | head -n1 || true)"
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            COMMIT_NOTES="$(git log --pretty=format:'- %s (%h)' "${PREVIOUS_TAG}..${TAG}")"
+            COMPARE_URL="https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${TAG}"
+            NOTES="$(printf '## Changes\n\n%s\n\n**Full Changelog**: %s\n' "$COMMIT_NOTES" "$COMPARE_URL")"
+          else
+            COMMIT_NOTES="$(git log --pretty=format:'- %s (%h)' "$TAG")"
+            NOTES="$(printf '## Changes\n\n%s\n' "$COMMIT_NOTES")"
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes "$NOTES"
+          else
+            EXTRA_FLAGS=()
+            if [[ "$TAG" == *-* ]]; then
+              EXTRA_FLAGS+=(--prerelease)
+            fi
+            gh release create "$TAG" --title "$TAG" --notes "$NOTES" --verify-tag "${EXTRA_FLAGS[@]}"
+          fi
