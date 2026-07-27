@@ -1,0 +1,69 @@
+{
+  "name": "cornbar",
+  "version": "0.1.0",
+  "description": "Framework-agnostic snackbar with gestures, actions, and flexible theming.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./react": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "prebuild": "node scripts/embed-css.mjs",
+    "pretest": "node scripts/embed-css.mjs",
+    "precheck": "node scripts/embed-css.mjs",
+    "build": "tsup",
+    "dev": "node scripts/embed-css.mjs && storybook dev -p 6006",
+    "build-storybook": "node scripts/embed-css.mjs && storybook build",
+    "check": "tsc --noEmit",
+    "test": "vitest run --environment jsdom",
+    "test:watch": "vitest --environment jsdom"
+  },
+  "keywords": [
+    "snackbar",
+    "toast",
+    "notification",
+    "react",
+    "javascript",
+    "typescript"
+  ],
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/html-vite": "^8.6.14",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "jsdom": "^29.1.1",
+    "storybook": "^8.6.14",
+    "tsup": "^8.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^4.1.10"
+  }
+}
