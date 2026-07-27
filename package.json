@@ -1,6 +1,6 @@
 {
   "name": "cornbar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic snackbar with gestures, actions, and flexible theming.",
   "license": "MIT",
   "repository": {
