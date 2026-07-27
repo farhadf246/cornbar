@@ -13,8 +13,8 @@
   --cornbar-text: #111827;
   --cornbar-text-secondary: #4b5563;
   --cornbar-border: #e5e7eb;
-  --cornbar-action-bg: transparent;
-  --cornbar-action-fg: #374151;
+  --cornbar-action-background: transparent;
+  --cornbar-action-text: #374151;
   --cornbar-action-border: #d1d5db;
   --cornbar-accent: #3b82f6;
   --cornbar-accent-soft: rgba(59, 130, 246, 0.16);
@@ -188,8 +188,8 @@
   appearance: none;
   font-family: inherit;
   border: 1px solid color-mix(in srgb, var(--cornbar-action-border) 75%, #ffffff 25%);
-  background: color-mix(in srgb, var(--cornbar-action-bg) 70%, #ffffff 30%);
-  color: var(--cornbar-action-fg);
+  background: color-mix(in srgb, var(--cornbar-action-background) 70%, #ffffff 30%);
+  color: var(--cornbar-action-text);
   border-radius: 999px;
   font-size: 12px;
   line-height: 1;
@@ -200,7 +200,7 @@
 
 .cornbar-action:hover {
   opacity: 1;
-  background: color-mix(in srgb, var(--cornbar-action-bg) 55%, #ffffff 45%);
+  background: color-mix(in srgb, var(--cornbar-action-background) 55%, #ffffff 45%);
 }
 
 .cornbar-action:disabled {
@@ -298,9 +298,9 @@
   --cornbar-text: #111827;
   --cornbar-text-secondary: #4b5563;
   --cornbar-border: #e5e7eb;
-  --cornbar-action-fg: #374151;
+  --cornbar-action-text: #374151;
   --cornbar-action-border: #d1d5db;
-  --cornbar-action-bg: rgba(255, 255, 255, 0.55);
+  --cornbar-action-background: rgba(255, 255, 255, 0.55);
 }
 
 .cornbar-toast[data-theme="dark"] {
@@ -308,9 +308,9 @@
   --cornbar-text: #f8fafc;
   --cornbar-text-secondary: #cbd5e1;
   --cornbar-border: #334155;
-  --cornbar-action-fg: #e2e8f0;
+  --cornbar-action-text: #e2e8f0;
   --cornbar-action-border: #475569;
-  --cornbar-action-bg: rgba(15, 23, 42, 0.65);
+  --cornbar-action-background: rgba(15, 23, 42, 0.65);
   --cornbar-shadow: 0 20px 42px rgba(2, 6, 23, 0.56);
 }
 

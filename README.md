@@ -248,8 +248,8 @@ cornbar.configure({
 | `--cornbar-text` | Primary text color | `#111827` |
 | `--cornbar-text-secondary` | Secondary text color | `#4b5563` |
 | `--cornbar-border` | Surface border color | `#e5e7eb` |
-| `--cornbar-action-bg` | Action button background | `transparent` |
-| `--cornbar-action-fg` | Action button text | `#374151` |
+| `--cornbar-action-background` | Action button background | `transparent` |
+| `--cornbar-action-text` | Action button text | `#374151` |
 | `--cornbar-action-border` | Action button border | `#d1d5db` |
 | `--cornbar-accent` | Variant accent color | `#3b82f6` |
 | `--cornbar-accent-soft` | Variant glow color | `rgba(59, 130, 246, 0.16)` |
@@ -277,7 +277,7 @@ cornbar.configure({
   --cornbar-text: #f8fafc;
   --cornbar-text-secondary: #cbd5e1;
   --cornbar-border: #334155;
-  --cornbar-action-fg: #e2e8f0;
+  --cornbar-action-text: #e2e8f0;
   --cornbar-action-border: #475569;
 }
 ```
