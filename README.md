@@ -359,7 +359,16 @@ npm no longer offers classic **Automation** tokens. Prefer **Trusted Publishing*
    - **Workflow filename:** `release.yml`
    - **Environment name:** leave empty
    - **Allowed actions:** `allow npm publish`
-4. Save. Later tag pushes will publish via OIDC (`id-token: write` is already in the workflow). Requires Node 22+ in CI.
+4. Save. Later tag pushes will publish via OIDC (`id-token: write` is already in the workflow). Requires Node 22+ and npm 11.5.1+ in CI (the workflow upgrades npm automatically).
+
+**Trusted publisher checklist (if publish fails with `ENEEDAUTH`):**
+
+- Workflow filename on npm is exactly `release.yml`
+- Repository is exactly `farhadf246/cornbar` (match your GitHub repo)
+- Environment name is empty unless you use `environment:` in the workflow
+- Allowed action: `allow npm publish`
+- `package.json` `repository.url` matches `https://github.com/farhadf246/cornbar.git`
+- Package already exists on npm (first publish must be manual: `npm login && npm publish --access public`)
 
 ### Fallback: Granular Access Token
 
