@@ -266,8 +266,8 @@ cornbar.configure({
 | `--cornbar-padding` | Inner spacing | `12px` |
 | `--cornbar-gap` | Internal item gap | `10px` |
 | `--cornbar-bg` | Surface background | `#ffffff` |
-| `--cornbar-fg` | Primary text color | `#111827` |
-| `--cornbar-muted` | Secondary text color | `#4b5563` |
+| `--cornbar-text` | Primary text color | `#111827` |
+| `--cornbar-text-secondary` | Secondary text color | `#4b5563` |
 | `--cornbar-border` | Surface border color | `#e5e7eb` |
 | `--cornbar-action-bg` | Action button background | `transparent` |
 | `--cornbar-action-fg` | Action button text | `#374151` |
@@ -285,8 +285,8 @@ cornbar.configure({
   --cornbar-radius: 10px;
   --cornbar-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   --cornbar-bg: #ffffff;
-  --cornbar-fg: #0f172a;
-  --cornbar-muted: #475569;
+  --cornbar-text: #0f172a;
+  --cornbar-text-secondary: #475569;
 }
 ```
 
@@ -295,8 +295,8 @@ cornbar.configure({
 ```css
 [data-theme="dark"] {
   --cornbar-bg: #0f172a;
-  --cornbar-fg: #f8fafc;
-  --cornbar-muted: #cbd5e1;
+  --cornbar-text: #f8fafc;
+  --cornbar-text-secondary: #cbd5e1;
   --cornbar-border: #334155;
   --cornbar-action-fg: #e2e8f0;
   --cornbar-action-border: #475569;
