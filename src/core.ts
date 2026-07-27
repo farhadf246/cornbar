@@ -72,15 +72,6 @@ type AutoDismissState = {
   remainingMs: number;
 };
 
-const POSITIONS: SnackbarPosition[] = [
-  "top-left",
-  "top-center",
-  "top-right",
-  "bottom-left",
-  "bottom-center",
-  "bottom-right"
-];
-
 const defaults: ResolvedSnackbarManagerConfig = {
   maxVisible: 4,
   duration: 4500,
@@ -123,7 +114,6 @@ export class SnackbarManager {
   constructor(config: SnackbarManagerConfig = {}) {
     this.config = { ...defaults, ...readGlobalConfig(), ...config };
     writeGlobalConfig(this.config);
-    this.initDom();
   }
 
   configure(config: SnackbarManagerConfig) {
@@ -135,10 +125,10 @@ export class SnackbarManager {
   show(options: SnackbarOptions = {}): string {
     this.syncConfigFromGlobal();
     const id = options.id ?? generateId();
-    if (!this.initDom()) {
+    const position = options.position ?? this.config.position;
+    if (!this.ensureMounted(position)) {
       return id;
     }
-    const position = options.position ?? this.config.position;
     const container = this.containers.get(position);
     if (!container) {
       return id;
@@ -242,7 +232,7 @@ export class SnackbarManager {
     this.config = { ...defaults, ...this.config, ...readGlobalConfig() };
   }
 
-  private initDom() {
+  private ensureMounted(position: SnackbarPosition) {
     if (!this.isBrowser()) {
       return false;
     }
@@ -250,13 +240,11 @@ export class SnackbarManager {
     ensureCornbarStyles();
 
     if (!this.host || !this.host.isConnected) {
-      this.host = this.ensureHost();
+      this.host = this.createHost();
       this.containers.clear();
-      this.ensureContainers();
     }
+    this.ensureContainer(position);
     this.applyRuntimeStyles();
-    this.syncHostState();
-
     return true;
   }
 
@@ -264,23 +252,39 @@ export class SnackbarManager {
     return typeof document !== "undefined" && typeof window !== "undefined";
   }
 
-  private ensureHost() {
-    let host = document.querySelector<HTMLElement>('[data-cornbar-host="true"]');
-    if (!host) {
-      host = document.createElement("div");
-      host.dataset.cornbarHost = "true";
-      host.className = "cornbar-host";
-      const backdrop = document.createElement("div");
-      backdrop.className = "cornbar-backdrop";
-      host.appendChild(backdrop);
-      document.body.appendChild(host);
+  private createHost() {
+    const existing = document.querySelector<HTMLElement>('[data-cornbar-host="true"]');
+    if (existing) {
+      existing.remove();
     }
+
+    const host = document.createElement("div");
+    host.dataset.cornbarHost = "true";
+    host.className = "cornbar-host";
+    document.body.appendChild(host);
     return host;
+  }
+
+  private syncBackdrop() {
+    if (!this.host) return;
+
+    const existing = this.host.querySelector<HTMLElement>(".cornbar-backdrop");
+    if (this.config.mobileBackdrop) {
+      if (!existing) {
+        const backdrop = document.createElement("div");
+        backdrop.className = "cornbar-backdrop";
+        this.host.prepend(backdrop);
+      }
+      return;
+    }
+
+    existing?.remove();
   }
 
   private applyRuntimeStyles() {
     if (!this.host) return;
     this.host.dataset.mobileBackdrop = this.config.mobileBackdrop ? "true" : "false";
+    this.syncBackdrop();
     const { x, y } = this.normalizeOffset(this.config.offset);
     this.host.style.setProperty("--cornbar-offset-x", x);
     this.host.style.setProperty("--cornbar-offset-y", y);
@@ -339,27 +343,52 @@ export class SnackbarManager {
 
   private syncHostState() {
     if (!this.host) return;
+
+    for (const [position, stack] of [...this.containers.entries()]) {
+      if (!stack.querySelector(".cornbar-toast")) {
+        stack.remove();
+        this.containers.delete(position);
+      }
+    }
+
     const hasToasts = this.host.querySelector(".cornbar-toast") !== null;
     this.host.dataset.hasToasts = hasToasts ? "true" : "false";
+
+    if (!hasToasts) {
+      this.teardownDom();
+    }
   }
 
-  private ensureContainers() {
+  private teardownDom() {
+    if (this.host) {
+      this.host.remove();
+      this.host = null;
+    }
+    this.containers.clear();
+  }
+
+  private ensureContainer(position: SnackbarPosition) {
     const host = this.host;
     if (!host) {
       return;
     }
-    POSITIONS.forEach((position) => {
-      const existing = host.querySelector<HTMLElement>(`.cornbar-stack[data-position="${position}"]`);
-      if (existing) {
-        this.containers.set(position, existing);
-        return;
-      }
-      const stack = document.createElement("div");
-      stack.className = "cornbar-stack";
-      stack.dataset.position = position;
-      host.appendChild(stack);
-      this.containers.set(position, stack);
-    });
+
+    const cached = this.containers.get(position);
+    if (cached?.isConnected) {
+      return;
+    }
+
+    const existing = host.querySelector<HTMLElement>(`.cornbar-stack[data-position="${position}"]`);
+    if (existing) {
+      this.containers.set(position, existing);
+      return;
+    }
+
+    const stack = document.createElement("div");
+    stack.className = "cornbar-stack";
+    stack.dataset.position = position;
+    host.appendChild(stack);
+    this.containers.set(position, stack);
   }
 
   private buildToast(id: string, options: SnackbarOptions) {

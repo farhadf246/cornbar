@@ -195,6 +195,27 @@ describe("SnackbarManager", () => {
     expect(host?.dataset.mobileBackdrop).toBe("true");
   });
 
+  it("does not mount host until a toast is shown", () => {
+    new SnackbarManager({ width: 420, mobileBackdrop: true });
+    expect(document.querySelector('[data-cornbar-host="true"]')).toBeNull();
+  });
+
+  it("mounts only the needed stack and tears down host after last toast", async () => {
+    const manager = new SnackbarManager({ duration: 0, position: "bottom-right" });
+    const id = manager.show({ description: "Temporary" });
+    await flush();
+
+    const host = document.querySelector<HTMLElement>('[data-cornbar-host="true"]');
+    expect(host).not.toBeNull();
+    expect(host?.querySelectorAll(".cornbar-stack")).toHaveLength(1);
+    expect(host?.querySelector('.cornbar-stack[data-position="bottom-right"]')).not.toBeNull();
+    expect(host?.querySelector(".cornbar-backdrop")).toBeNull();
+
+    manager.dismiss(id, true);
+    await flush();
+    expect(document.querySelector('[data-cornbar-host="true"]')).toBeNull();
+  });
+
   it("clears hasToasts after dismiss for backdrop state", async () => {
     const manager = new SnackbarManager({ mobileBackdrop: true, duration: 0 });
     const id = manager.show({ description: "Will dismiss" });
@@ -205,7 +226,7 @@ describe("SnackbarManager", () => {
 
     manager.dismiss(id, true);
     await flush();
-    expect(host?.dataset.hasToasts).toBe("false");
+    expect(document.querySelector('[data-cornbar-host="true"]')).toBeNull();
   });
 
   it("applies uniform offset to both axes", async () => {
