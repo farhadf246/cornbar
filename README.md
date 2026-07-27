@@ -360,3 +360,7 @@ Static build:
 ```bash
 npm run build-storybook
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, project layout, and pull request guidelines.
