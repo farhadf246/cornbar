@@ -186,6 +186,7 @@
 
 .cornbar-action {
   appearance: none;
+  font-family: inherit;
   border: 1px solid color-mix(in srgb, var(--cornbar-action-border) 75%, #ffffff 25%);
   background: color-mix(in srgb, var(--cornbar-action-bg) 70%, #ffffff 30%);
   color: var(--cornbar-action-fg);
@@ -232,6 +233,7 @@
   justify-self: end;
   align-self: start;
   appearance: none;
+  font-family: inherit;
   border: none;
   background: transparent;
   color: var(--cornbar-text-secondary);
