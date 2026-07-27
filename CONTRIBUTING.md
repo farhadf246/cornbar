@@ -51,7 +51,7 @@ npm run build
 | `src/react-api.ts` | React hooks/helpers |
 | `src/provider.tsx` | `CornbarProvider` component |
 | `src/react.ts` | `cornbar/react` entry point |
-| `src/index.ts` | Core-only entry point |
+| `src/index.ts` | Main entry (`cornbar` + re-exported React helpers) |
 | `src/styles.css` | Source styles (edit this file) |
 | `src/styles.generated.ts` | Auto-generated embedded CSS (do not edit manually) |
 | `scripts/embed-css.mjs` | Minifies `styles.css` into `styles.generated.ts` |

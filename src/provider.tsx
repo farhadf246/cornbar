@@ -1,3 +1,5 @@
+"use client";
+
 import { useLayoutEffect } from "react";
 import { getCornbar, type SnackbarManagerConfig } from "./core";
 import { ensureCornbarStyles } from "./inject-styles";
