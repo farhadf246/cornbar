@@ -3,6 +3,8 @@
 `cornbar` is a lightweight, framework-friendly toast/snackbar library for JavaScript apps.  
 It works in vanilla projects and ships a React-friendly entry as well.
 
+[**Live Demo (Storybook)**](https://farhadf246.github.io/cornbar/)
+
 ## Features
 
 - Multi-position toasts: `top/bottom` + `left/center/right`
