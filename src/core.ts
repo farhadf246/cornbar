@@ -305,13 +305,7 @@ export class SnackbarManager {
     if (input == null || input === "") {
       return undefined;
     }
-    if (typeof input === "number") {
-      return `${input}px`;
-    }
-    if (/^\d+(\.\d+)?$/.test(input.trim())) {
-      return `${input.trim()}px`;
-    }
-    return input;
+    return this.normalizeLength(input);
   }
 
   private normalizeOffset(input: SnackbarOffset | undefined) {
@@ -428,64 +422,6 @@ export class SnackbarManager {
     }
 
     const actions = options.actions ?? [];
-    const actionWrap = document.createElement("div");
-    actionWrap.className = "cornbar-actions";
-    actions.forEach((action) => {
-      const button = document.createElement("button");
-      button.className = `cornbar-action ${action.className ?? ""}`.trim();
-      button.type = "button";
-      button.textContent = action.label;
-      button.onclick = async () => {
-        if (button.dataset.loading === "true") {
-          return;
-        }
-
-        if (!action.onClick) {
-          if (action.dismissOnClick !== false) {
-            this.dismiss(id);
-          }
-          return;
-        }
-
-        const result = action.onClick(id);
-        const isPromiseLike =
-          typeof result === "object" &&
-          result !== null &&
-          "then" in result &&
-          typeof (result as PromiseLike<void>).then === "function";
-
-        if (!isPromiseLike) {
-          if (action.dismissOnClick !== false) {
-            this.dismiss(id);
-          }
-          return;
-        }
-
-        const originalLabel = action.label;
-        button.dataset.loading = "true";
-        button.disabled = true;
-        button.ariaBusy = "true";
-        button.textContent = action.loadingLabel ?? "Loading...";
-
-        try {
-          await result;
-          if (action.dismissOnClick !== false) {
-            this.dismiss(id);
-          }
-        } catch (error) {
-          console.error("[cornbar] action callback failed", error);
-        } finally {
-          if (button.isConnected) {
-            button.dataset.loading = "false";
-            button.disabled = false;
-            button.ariaBusy = "false";
-            button.textContent = originalLabel;
-          }
-        }
-      };
-      actionWrap.appendChild(button);
-    });
-
     const close = document.createElement("button");
     close.className = "cornbar-close";
     close.type = "button";
@@ -493,7 +429,68 @@ export class SnackbarManager {
     close.textContent = "×";
     close.onclick = () => this.dismiss(id);
 
-    toast.append(content, actionWrap, close);
+    toast.append(content, close);
+
+    if (actions.length > 0) {
+      const actionWrap = document.createElement("div");
+      actionWrap.className = "cornbar-actions";
+      for (const action of actions) {
+        const button = document.createElement("button");
+        button.className = `cornbar-action ${action.className ?? ""}`.trim();
+        button.type = "button";
+        button.textContent = action.label;
+        button.onclick = async () => {
+          if (button.dataset.loading === "true") {
+            return;
+          }
+
+          if (!action.onClick) {
+            if (action.dismissOnClick !== false) {
+              this.dismiss(id);
+            }
+            return;
+          }
+
+          const result = action.onClick(id);
+          const isPromiseLike =
+            typeof result === "object" &&
+            result !== null &&
+            "then" in result &&
+            typeof (result as PromiseLike<void>).then === "function";
+
+          if (!isPromiseLike) {
+            if (action.dismissOnClick !== false) {
+              this.dismiss(id);
+            }
+            return;
+          }
+
+          const originalLabel = action.label;
+          button.dataset.loading = "true";
+          button.disabled = true;
+          button.ariaBusy = "true";
+          button.textContent = action.loadingLabel ?? "Loading...";
+
+          try {
+            await result;
+            if (action.dismissOnClick !== false) {
+              this.dismiss(id);
+            }
+          } catch (error) {
+            console.error("[cornbar] action callback failed", error);
+          } finally {
+            if (button.isConnected) {
+              button.dataset.loading = "false";
+              button.disabled = false;
+              button.ariaBusy = "false";
+              button.textContent = originalLabel;
+            }
+          }
+        };
+        actionWrap.appendChild(button);
+      }
+      toast.append(actionWrap);
+    }
 
     if (this.config.closeOnSwipe) {
       this.attachSwipeDismiss(toast, id);

@@ -27,6 +27,14 @@ yarn add cornbar
 pnpm add cornbar
 ```
 
+### Entry points
+
+| Import | Use for |
+|---|---|
+| `cornbar` | Vanilla JS / framework-agnostic API (`cornbar`, `getCornbar`, types) |
+| `cornbar/react` | React helpers (`CornbarProvider`, `useSnackbar`, etc.) |
+| `cornbar/styles.css` | Optional external stylesheet instead of auto-injected styles |
+
 ## Quick Start (Vanilla)
 
 ```ts
@@ -47,7 +55,8 @@ cornbar.show({
 No children needed — place it once in your layout:
 
 ```tsx
-import { CornbarProvider, cornbar } from "cornbar";
+import { cornbar } from "cornbar";
+import { CornbarProvider } from "cornbar/react";
 
 export function App() {
   return (
@@ -69,7 +78,7 @@ export function App() {
 **Next.js (`app/layout.tsx`):**
 
 ```tsx
-import { CornbarProvider } from "cornbar";
+import { CornbarProvider } from "cornbar/react";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -97,7 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```tsx
 "use client";
 
-import { CornbarProvider } from "cornbar";
+import { CornbarProvider } from "cornbar/react";
 
 export function Providers() {
   return (

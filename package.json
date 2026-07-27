@@ -18,15 +18,15 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./styles.css": "./dist/styles.css",
     "./react": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
   },
   "sideEffects": [
-    "**/*.css"
+    "*.css"
   ],
   "scripts": {
     "prebuild": "node scripts/embed-css.mjs",
